@@ -1,6 +1,6 @@
-import { Writable } from 'stream';
-import sax from 'sax';
-import { durationStr } from './parse-time';
+const Writable  = require('stream').Writable;
+const sax       = require('sax');
+const parseTime = require('./parse-time');
 
 
 /**
@@ -9,12 +9,10 @@ import { durationStr } from './parse-time';
  * @extends WRitableStream
  * @constructor
  */
-export = class DashMPDParser extends Writable {
-  _parser: any;
-
-  constructor(targetID: any) {
+module.exports = class DashMPDParser extends Writable {
+  constructor(targetID) {
     super();
-    this._parser = sax.createStream(false, { lowercase: true });
+    this._parser = sax.createStream(false, { lowercasetags: true });
     this._parser.on('error', this.emit.bind(this, 'error'));
 
     let lastTag;
@@ -22,7 +20,7 @@ export = class DashMPDParser extends Writable {
     let seq = 0;
     let segmentTemplate;
     let timescale, offset, duration, baseURL;
-    let timeline: number[][] = [];
+    let timeline = [];
     let getSegments = false;
     let isStatic;
     let treeLevel;
@@ -52,7 +50,7 @@ export = class DashMPDParser extends Writable {
           offset = 0;
           baseURL = [];
           treeLevel = 0;
-          periodStart = durationStr(node.attributes.start) || 0;
+          periodStart = parseTime.durationStr(node.attributes.start) || 0;
           break;
         case 'segmentlist':
           seq = parseInt(node.attributes.startnumber) || seq;
